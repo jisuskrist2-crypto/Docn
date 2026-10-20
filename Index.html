@@ -1,0 +1,1061 @@
+Here is a responsive HTML/CSS/JavaScript code for a hospital job board application. It includes sample job data and a payment step before application submission.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>MediCareers · Hospital Job Board</title>
+  <!-- Font Awesome 6 (free) for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    /* ---------- RESET & GLOBAL ---------- */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    :root {
+      --primary: #0a5c7e;
+      --primary-light: #1d8ab3;
+      --primary-soft: #e3f0f7;
+      --accent: #1e8e5c;
+      --accent-light: #2eae74;
+      --dark: #1f2a36;
+      --gray: #5b6f7e;
+      --light-gray: #f4f7fb;
+      --white: #ffffff;
+      --border: #d9e2e9;
+      --shadow: 0 10px 25px -8px rgba(0, 40, 60, 0.15);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      background: var(--light-gray);
+      color: var(--dark);
+      line-height: 1.5;
+      padding: 18px 16px 40px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- APP CONTAINER ---------- */
+    .app-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* ---------- HEADER ---------- */
+    .app-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      background: var(--primary);
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      box-shadow: 0 6px 12px -4px rgba(10, 92, 126, 0.3);
+    }
+
+    .logo-text h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--primary);
+    }
+
+    .logo-text span {
+      font-size: 0.75rem;
+      color: var(--gray);
+      display: block;
+      margin-top: -2px;
+      font-weight: 500;
+    }
+
+    .header-stats {
+      background: white;
+      padding: 8px 18px;
+      border-radius: 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: var(--shadow);
+      font-size: 0.9rem;
+      border: 1px solid var(--border);
+    }
+
+    .header-stats i {
+      color: var(--primary-light);
+      margin-right: 6px;
+    }
+
+    .header-stats strong {
+      color: var(--primary);
+    }
+
+    /* ---------- SEARCH & FILTER BAR ---------- */
+    .filter-bar {
+      background: white;
+      padding: 16px 20px;
+      border-radius: 60px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow);
+      margin-bottom: 32px;
+      border: 1px solid var(--border);
+    }
+
+    .search-wrapper {
+      flex: 2;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      background: var(--light-gray);
+      border-radius: 40px;
+      padding: 6px 16px;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    .search-wrapper:focus-within {
+      border-color: var(--primary-light);
+      background: white;
+    }
+
+    .search-wrapper i {
+      color: var(--gray);
+      font-size: 1rem;
+      margin-right: 8px;
+    }
+
+    .search-wrapper input {
+      border: none;
+      background: transparent;
+      padding: 10px 0;
+      width: 100%;
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .filter-select {
+      flex: 1;
+      min-width: 150px;
+      display: flex;
+      align-items: center;
+      background: var(--light-gray);
+      border-radius: 40px;
+      padding: 4px 12px 4px 16px;
+      border: 1px solid transparent;
+    }
+
+    .filter-select i {
+      color: var(--gray);
+      margin-right: 8px;
+    }
+
+    .filter-select select {
+      border: none;
+      background: transparent;
+      padding: 10px 0;
+      width: 100%;
+      font-size: 0.95rem;
+      outline: none;
+      cursor: pointer;
+      font-weight: 500;
+      color: var(--dark);
+    }
+
+    /* ---------- JOB GRID ---------- */
+    .job-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 22px;
+      margin-bottom: 32px;
+    }
+
+    .job-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 22px 20px 20px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.02), 0 6px 20px -6px rgba(0, 40, 60, 0.08);
+      border: 1px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      position: relative;
+    }
+
+    .job-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 30px -12px rgba(10, 92, 126, 0.18);
+      border-color: var(--primary-soft);
+    }
+
+    .job-specialty {
+      display: inline-block;
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 30px;
+      letter-spacing: 0.3px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      align-self: flex-start;
+    }
+
+    .job-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 8px;
+      color: var(--dark);
+    }
+
+    .job-hospital {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      font-weight: 500;
+    }
+
+    .job-hospital i {
+      color: var(--primary-light);
+      width: 16px;
+      font-size: 0.85rem;
+    }
+
+    .job-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding: 14px 0 10px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .job-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85rem;
+      color: var(--gray);
+    }
+
+    .job-detail-item i {
+      color: var(--primary-light);
+      width: 16px;
+    }
+
+    .job-salary {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .job-salary i {
+      font-size: 0.9rem;
+      color: var(--accent);
+    }
+
+    .job-desc {
+      font-size: 0.88rem;
+      color: var(--gray);
+      margin-bottom: 20px;
+      flex: 1;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .apply-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 40px;
+      padding: 12px 18px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.15s, box-shadow 0.15s;
+      margin-top: 6px;
+      box-shadow: 0 6px 12px -6px rgba(10, 92, 126, 0.4);
+      border: 1px solid var(--primary);
+    }
+
+    .apply-btn i {
+      font-size: 0.85rem;
+    }
+
+    .apply-btn:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-light);
+      box-shadow: 0 10px 18px -6px rgba(10, 92, 126, 0.5);
+    }
+
+    .apply-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* ---------- NO RESULTS ---------- */
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 50px 20px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      color: var(--gray);
+      font-size: 1rem;
+    }
+
+    .no-results i {
+      font-size: 2.5rem;
+      color: var(--primary-soft);
+      margin-bottom: 14px;
+      display: block;
+    }
+
+    /* ---------- MODAL / PAYMENT FORM ---------- */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(20, 40, 50, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-card {
+      background: white;
+      border-radius: 28px;
+      max-width: 480px;
+      width: 100%;
+      padding: 28px 26px 30px;
+      box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.4);
+      position: relative;
+      animation: fadeSlide 0.25s ease-out;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    @keyframes fadeSlide {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--gray);
+      cursor: pointer;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--light-gray);
+      color: var(--dark);
+    }
+
+    .modal-header {
+      margin-bottom: 18px;
+    }
+
+    .modal-header h3 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .modal-header h3 i {
+      font-size: 1.4rem;
+      color: var(--accent);
+    }
+
+    .modal-header p {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    .job-summary {
+      background: var(--primary-soft);
+      border-radius: var(--radius-sm);
+      padding: 14px 16px;
+      margin-bottom: 20px;
+      border-left: 4px solid var(--primary);
+    }
+
+    .job-summary .job-title-sm {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--dark);
+    }
+
+    .job-summary .job-hospital-sm {
+      font-size: 0.85rem;
+      color: var(--gray);
+      margin-top: 2px;
+    }
+
+    .job-summary .fee-note {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .payment-form .form-group {
+      margin-bottom: 16px;
+    }
+
+    .payment-form label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+
+    .payment-form input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s, box-shadow 0.2s;
+      background: var(--white);
+    }
+
+    .payment-form input:focus {
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px rgba(29, 138, 179, 0.15);
+    }
+
+    .payment-form .row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .payment-form .row .form-group {
+      flex: 1;
+    }
+
+    .pay-submit-btn {
+      width: 100%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 60px;
+      padding: 16px;
+      font-weight: 700;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 10px 18px -6px rgba(30, 142, 92, 0.4);
+    }
+
+    .pay-submit-btn:hover {
+      background: var(--accent-light);
+      box-shadow: 0 14px 22px -6px rgba(30, 142, 92, 0.5);
+    }
+
+    .pay-submit-btn:disabled {
+      background: #b0c9b9;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 0.75rem;
+      color: var(--gray);
+      margin-top: 16px;
+    }
+
+    .secure-note i {
+      color: var(--accent);
+    }
+
+    /* ---------- TOAST / FEEDBACK ---------- */
+    .toast {
+      position: fixed;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--dark);
+      color: white;
+      padding: 14px 26px;
+      border-radius: 60px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.4);
+      z-index: 1200;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      max-width: 90%;
+    }
+
+    .toast.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .toast i {
+      color: #a3e0b0;
+      font-size: 1.1rem;
+    }
+
+    /* ---------- FOOTER ---------- */
+    .app-footer {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--gray);
+      margin-top: 30px;
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+    }
+
+    /* ---------- RESPONSIVE TWEAKS ---------- */
+    @media (max-width: 680px) {
+      body {
+        padding: 12px 12px 30px;
+      }
+
+      .filter-bar {
+        border-radius: 32px;
+        padding: 14px 16px;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .header-stats {
+        font-size: 0.8rem;
+        padding: 6px 14px;
+      }
+
+      .logo-text h1 {
+        font-size: 1.3rem;
+      }
+
+      .job-card {
+        padding: 18px 16px 18px;
+      }
+
+      .modal-card {
+        padding: 24px 18px 26px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .job-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-form .row {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
+
+    /* small utility */
+    .text-muted {
+      color: var(--gray);
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo-area">
+        <div class="logo-icon">
+          <i class="fas fa-hospital"></i>
+        </div>
+        <div class="logo-text">
+          <h1>MediCareers</h1>
+          <span>Hospital job board · trusted by 200+ facilities</span>
+        </div>
+      </div>
+      <div class="header-stats">
+        <span><i class="fas fa-briefcase"></i> <strong id="jobCount">0</strong> jobs</span>
+        <span><i class="fas fa-shield-alt"></i> <strong>secure</strong> apply</span>
+      </div>
+    </header>
+
+    <!-- Search and filter -->
+    <div class="filter-bar">
+      <div class="search-wrapper">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search by title, hospital, or specialty...">
+      </div>
+      <div class="filter-select">
+        <i class="fas fa-filter"></i>
+        <select id="specialtyFilter">
+          <option value="all">All specialties</option>
+          <option value="Nursing">Nursing</option>
+          <option value="Medicine">Medicine</option>
+          <option value="Surgery">Surgery</option>
+          <option value="Radiology">Radiology</option>
+          <option value="Pediatrics">Pediatrics</option>
+          <option value="Emergency">Emergency</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Job grid -->
+    <div id="jobGrid" class="job-grid"></div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>© 2025 MediCareers — Hospital job board. All applications include a $15 processing fee.</p>
+    </footer>
+  </div>
+
+  <!-- Payment modal (overlay) -->
+  <div id="paymentModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="closeModalBtn">&times;</button>
+      <div class="modal-header">
+        <h3><i class="fas fa-lock"></i> Secure application</h3>
+        <p>Complete payment to submit your application.</p>
+      </div>
+
+      <div class="job-summary" id="modalJobSummary">
+        <!-- dynamic content -->
+      </div>
+
+      <form class="payment-form" id="paymentForm">
+        <div class="form-group">
+          <label for="cardName">Cardholder name</label>
+          <input type="text" id="cardName" placeholder="Dr. Jane Smith" required>
+        </div>
+        <div class="form-group">
+          <label for="cardNumber">Card number</label>
+          <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" required>
+        </div>
+        <div class="row">
+          <div class="form-group">
+            <label for="expiry">Expiry</label>
+            <input type="text" id="expiry" placeholder="MM/YY" maxlength="5" required>
+          </div>
+          <div class="form-group">
+            <label for="cvv">CVV</label>
+            <input type="text" id="cvv" placeholder="123" maxlength="4" required>
+          </div>
+        </div>
+        <button type="submit" class="pay-submit-btn" id="payAndSubmitBtn">
+          <i class="fas fa-shield-alt"></i> Pay $15 &amp; submit application
+        </button>
+        <div class="secure-note">
+          <i class="fas fa-lock"></i> 256-bit SSL encrypted · demo payment
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast message -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span id="toastMessage">Application submitted!</span>
+  </div>
+
+  <script>
+    (function() {
+      // ---------- SAMPLE JOB DATA ----------
+      const jobsData = [
+        {
+          id: 1,
+          title: "Registered Nurse – ICU",
+          hospital: "St. Mary's General Hospital",
+          specialty: "Nursing",
+          location: "Boston, MA",
+          type: "Full-time",
+          salary: "$85k – $105k",
+          description: "Provide critical care nursing in a 24-bed ICU. 2+ years ICU experience required."
+        },
+        {
+          id: 2,
+          title: "Cardiologist (Non-invasive)",
+          hospital: "Cleveland Medical Center",
+          specialty: "Medicine",
+          location: "Cleveland, OH",
+          type: "Full-time",
+          salary: "$320k – $410k",
+          description: "Join a top-ranked cardiac team. Board certified in cardiovascular disease."
+        },
+        {
+          id: 3,
+          title: "Surgical Technologist",
+          hospital: "Lakeside Surgical Hospital",
+          specialty: "Surgery",
+          location: "Chicago, IL",
+          type: "Full-time",
+          salary: "$62k – $78k",
+          description: "Assist in operating room, sterile processing, and patient prep. Certification preferred."
+        },
+        {
+          id: 4,
+          title: "Radiology Technologist",
+          hospital: "Pacific Imaging Center",
+          specialty: "Radiology",
+          location: "San Diego, CA",
+          type: "Part-time",
+          salary: "$45 – $60/hr",
+          description: "Perform X-rays, CTs, and assist with fluoroscopy. ARRT required."
+        },
+        {
+          id: 5,
+          title: "Pediatric Nurse Practitioner",
+          hospital: "Children's Health of Denver",
+          specialty: "Pediatrics",
+          location: "Denver, CO",
+          type: "Full-time",
+          salary: "$115k – $140k",
+          description: "Provide primary care to pediatric patients. CPNP certification required."
+        },
+        {
+          id: 6,
+          title: "Emergency Medicine Physician",
+          hospital: "Metro ER & Trauma Center",
+          specialty: "Emergency",
+          location: "Houston, TX",
+          type: "Full-time",
+          salary: "$280k – $350k",
+          description: "Busy level 1 trauma center. Board eligible/certified in emergency medicine."
+        },
+        {
+          id: 7,
+          title: "Clinical Nurse Manager",
+          hospital: "Northwestern Memorial",
+          specialty: "Nursing",
+          location: "Chicago, IL",
+          type: "Full-time",
+          salary: "$105k – $125k",
+          description: "Lead a 40-bed med-surg unit. 5 years nursing + 2 years leadership experience."
+        },
+        {
+          id: 8,
+          title: "MRI Technologist",
+          hospital: "Advanced Diagnostic Imaging",
+          specialty: "Radiology",
+          location: "Seattle, WA",
+          type: "Full-time",
+          salary: "$75k – $95k",
+          description: "Operate 3T MRI scanners. ARMRIT or ARRT(MR) certification required."
+        },
+        {
+          id: 9,
+          title: "Pediatric Surgeon",
+          hospital: "Nationwide Children's",
+          specialty: "Surgery",
+          location: "Columbus, OH",
+          type: "Full-time",
+          salary: "$380k – $500k",
+          description: "Board certified pediatric surgeon. Level 1 trauma experience preferred."
+        },
+        {
+          id: 10,
+          title: "Family Medicine Physician",
+          hospital: "Summit Community Hospital",
+          specialty: "Medicine",
+          location: "Bend, OR",
+          type: "Full-time",
+          salary: "$230k – $280k",
+          description: "Outpatient family medicine. No weekends. Loan repayment available."
+        }
+      ];
+
+      // ---------- STATE ----------
+      let jobs = [...jobsData];
+      let currentJob = null;          // holds job being applied to
+
+      // DOM elements
+      const jobGrid = document.getElementById('jobGrid');
+      const jobCountSpan = document.getElementById('jobCount');
+      const searchInput = document.getElementById('searchInput');
+      const specialtyFilter = document.getElementById('specialtyFilter');
+      const paymentModal = document.getElementById('paymentModal');
+      const modalJobSummary = document.getElementById('modalJobSummary');
+      const closeModalBtn = document.getElementById('closeModalBtn');
+      const paymentForm = document.getElementById('paymentForm');
+      const paySubmitBtn = document.getElementById('payAndSubmitBtn');
+      const toast = document.getElementById('toast');
+      const toastMessage = document.getElementById('toastMessage');
+
+      // ---------- HELPER: RENDER JOBS ----------
+      function renderJobs(filteredJobs) {
+        if (!filteredJobs || filteredJobs.length === 0) {
+          jobGrid.innerHTML = `
+            <div class="no-results">
+              <i class="fas fa-search"></i>
+              No hospital jobs match your criteria.<br>Try adjusting your search.
+            </div>
+          `;
+          jobCountSpan.textContent = '0';
+          return;
+        }
+
+        jobCountSpan.textContent = filteredJobs.length;
+        let html = '';
+        filteredJobs.forEach(job => {
+          html += `
+            <div class="job-card" data-job-id="${job.id}">
+              <span class="job-specialty">${job.specialty}</span>
+              <h3 class="job-title">${job.title}</h3>
+              <div class="job-hospital"><i class="fas fa-hospital"></i> ${job.hospital}</div>
+              <div class="job-details">
+                <div class="job-detail-item"><i class="fas fa-map-marker-alt"></i> ${job.location}</div>
+                <div class="job-detail-item"><i class="fas fa-clock"></i> ${job.type}</div>
+              </div>
+              <div class="job-salary"><i class="fas fa-dollar-sign"></i> ${job.salary}</div>
+              <div class="job-desc">${job.description}</div>
+              <button class="apply-btn" data-job-id="${job.id}">
+                <i class="fas fa-paper-plane"></i> Apply now ($15 fee)
+              </button>
+            </div>
+          `;
+        });
+        jobGrid.innerHTML = html;
+
+        // Attach event listeners to apply buttons (using event delegation to be safe)
+        document.querySelectorAll('.apply-btn').forEach(btn => {
+          btn.addEventListener('click', function(e) {
+            const jobId = parseInt(this.getAttribute('data-job-id'));
+            const job = jobs.find(j => j.id === jobId);
+            if (job) openPaymentModal(job);
+          });
+        });
+      }
+
+      // ---------- FILTER JOBS ----------
+      function filterJobs() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+        const specialty = specialtyFilter.value;
+
+        let filtered = jobs.filter(job => {
+          const matchesSearch = 
+            job.title.toLowerCase().includes(searchTerm) ||
+            job.hospital.toLowerCase().includes(searchTerm) ||
+            job.specialty.toLowerCase().includes(searchTerm) ||
+            job.location.toLowerCase().includes(searchTerm);
+          const matchesSpecialty = specialty === 'all' || job.specialty === specialty;
+          return matchesSearch && matchesSpecialty;
+        });
+
+        renderJobs(filtered);
+      }
+
+      // ---------- OPEN PAYMENT MODAL ----------
+      function openPaymentModal(job) {
+        currentJob = job;
+
+        // Build summary inside modal
+        modalJobSummary.innerHTML = `
+          <div class="job-title-sm">${job.title}</div>
+          <div class="job-hospital-sm"><i class="fas fa-hospital" style="margin-right: 4px;"></i>${job.hospital}</div>
+          <div class="fee-note"><i class="fas fa-credit-card"></i> Application fee: $15.00 (non-refundable)</div>
+        `;
+
+        // Reset form & enable submit button
+        paymentForm.reset();
+        paySubmitBtn.disabled = false;
+        paySubmitBtn.innerHTML = `<i class="fas fa-shield-alt"></i> Pay $15 &amp; submit application`;
+
+        // Show modal
+        paymentModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // ---------- CLOSE MODAL ----------
+      function closePaymentModal() {
+        paymentModal.classList.remove('active');
+        document.body.style.overflow = '';
+        currentJob = null;
+      }
+
+      // ---------- SHOW TOAST ----------
+      function showToast(message) {
+        toastMessage.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3800);
+      }
+
+      // ---------- HANDLE PAYMENT & SUBMIT ----------
+      function handlePaymentSubmit(e) {
+        e.preventDefault();
+
+        if (!currentJob) {
+          showToast('Something went wrong. Please try again.');
+          closePaymentModal();
+          return;
+        }
+
+        // Simple form validation (HTML required already does most, but we double-check)
+        const cardName = document.getElementById('cardName').value.trim();
+        const cardNumber = document.getElementById('cardNumber').value.trim();
+        const expiry = document.getElementById('expiry').value.trim();
+        const cvv = document.getElementById('cvv').value.trim();
+
+        if (!cardName || !cardNumber || !expiry || !cvv) {
+          showToast('Please fill in all payment fields.');
+          return;
+        }
+
+        // Disable button to prevent double submission
+        paySubmitBtn.disabled = true;
+        paySubmitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Processing payment...`;
+
+        // Simulate API / payment delay
+        setTimeout(() => {
+          // SUCCESS: application submitted
+          showToast(`✅ Application submitted for ${currentJob.title}!`);
+          closePaymentModal();
+
+          // (optional) remove the job from listing or mark as applied — for demo we just show toast.
+          // Could also disable the button, but we keep it simple.
+        }, 1200);
+      }
+
+      // ---------- EVENT LISTENERS ----------
+      searchInput.addEventListener('input', filterJobs);
+      specialtyFilter.addEventListener('change', filterJobs);
+
+      closeModalBtn.addEventListener('click', closePaymentModal);
+      // close modal on overlay click (but not on card itself)
+      paymentModal.addEventListener('click', function(e) {
+        if (e.target === paymentModal) closePaymentModal();
+      });
+
+      paymentForm.addEventListener('submit', handlePaymentSubmit);
+
+      // escape key closes modal
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && paymentModal.classList.contains('active')) {
+          closePaymentModal();
+        }
+      });
+
+      // Format card number with spaces (simple UX)
+      document.getElementById('cardNumber').addEventListener('input', function(e) {
+        let value = this.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        let formatted = '';
+        for (let i = 0; i < value.length; i++) {
+          if (i > 0 && i % 4 === 0) formatted += ' ';
+          formatted += value[i];
+        }
+        this.value = formatted.trim();
+      });
+
+      // Expiry auto slash
+      document.getElementById('expiry').addEventListener('input', function(e) {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+          this.value = value.slice(0, 2) + (value.length > 2 ? '/' + value.slice(2, 4) : '');
+        } else {
+          this.value = value;
+        }
+      });
+
+      // CVV numeric only
+      document.getElementById('cvv').addEventListener('input', function(e) {
+        this.value = this.value.replace(/\D/g, '').slice(0, 4);
+      });
+
+      // ---------- INITIAL RENDER ----------
+      renderJobs(jobs);
+    })();
+  </script>
+</body>
+</html>
+```
